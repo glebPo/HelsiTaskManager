@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.18.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HelsiTaskManager.Repository\HelsiTaskManager.Repository.csproj" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<Using Include="HelsiTaskManager.Repository" />
+		<Using Include="MongoDB.Bson" />
+	</ItemGroup>
+</Project>
