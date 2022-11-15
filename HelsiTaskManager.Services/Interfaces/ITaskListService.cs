@@ -5,7 +5,7 @@ public interface ITaskListService
 {
     Task<TaskList> Get(ObjectId request);
     Task<BaseResponse> Add(TaskList taskList);
-    Task<BaseResponse> Udpate(TaskList taskList);
+    Task<BaseResponse> Udpate(TaskListRequest taskList);
     Task<BaseResponse> Remove(ObjectId id);
     Task<TaskListsResponse> GetAll(ObjectId userId);
     Task<GetGoalsInTaskResponse> GetGoalsInTask(ObjectId userId, int skip, int limit);

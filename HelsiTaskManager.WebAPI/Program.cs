@@ -1,4 +1,5 @@
 using HelsiTaskManager.WebAPI;
+using HelsiTaskManager.WebAPI.Extensions;
 using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,8 +24,9 @@ builder.Services.AddHttpLogging(logging =>
 });
 
 var app = builder.Build();
-var logger = app.Services.GetService<ILogger>();
-app.ConfigureExceptionHandler(logger);
+
+app.UseHelsiExceptionHandler();
+app.UseMiddleware<HelsiRightsMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -34,6 +36,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 
 app.MapControllers();
 

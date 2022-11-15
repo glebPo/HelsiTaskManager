@@ -1,6 +1,8 @@
-﻿using HelsiTaskManager.Repository.Dto;
+﻿using HelsiTaskManager.Repository;
+using HelsiTaskManager.Repository.Dto;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using System.Diagnostics;
 
 namespace HelsiTaskManager.Services;
 public class TaskListService : ITaskListService
@@ -23,7 +25,7 @@ public class TaskListService : ITaskListService
     /// <param name="taskList"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public async Task<BaseResponse> Add(TaskList taskList) 
+    public async Task<BaseResponse> Add(TaskList taskList)
     {
         var response = new BaseResponse();
         if (!await _unitOfWork.User.AnyAsync(x => x.Id == taskList.OwnerId))
@@ -39,10 +41,10 @@ public class TaskListService : ITaskListService
     /// </summary>
     /// <param name="taskList"></param>
     /// <returns></returns>
-    public async Task<BaseResponse> Udpate(TaskList taskList)
+    public async Task<BaseResponse> Udpate(TaskListRequest request)
     {
         var response = new BaseResponse();
-        var result = await _unitOfWork.TaskList.Update(taskList);
+        var result = await _unitOfWork.TaskList.Update(request.TaskList);
         response.IsSuccess = result > 0;
         return response;
     }
@@ -51,7 +53,7 @@ public class TaskListService : ITaskListService
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    public async Task<BaseResponse> Remove(BaseRequest request)
+    public async Task<BaseResponse> Remove(TaskListRequest request)
     {
         var response = new BaseResponse();
         var result = await _unitOfWork.TaskList.RemoveAsync(request.Id);
@@ -59,6 +61,11 @@ public class TaskListService : ITaskListService
         return response;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     public async Task<TaskListsResponse> GetAll(ObjectId userId)
     {
         var response = new TaskListsResponse { IsSuccess = true };
@@ -75,7 +82,8 @@ public class TaskListService : ITaskListService
     /// <returns></returns>
     public async Task<GetGoalsInTaskResponse> GetGoalsInTask(ObjectId id, int skip, int limit)
     {
-        //TODO: change on DB aggregation
+        //TODO: change on DB aggregation?
+
         var response = new GetGoalsInTaskResponse { IsSuccess = true };
         var collection = _unitOfWork.TaskList.Context.GetCollection<TaskList>("TaskList");
         var filter = Builders<TaskList>.Filter.Eq(x => x.Id, id);
@@ -110,7 +118,7 @@ public class TaskListService : ITaskListService
         var taskList = await _unitOfWork.TaskList.GetAsync(request.Id);
         if (taskList.LinkedUsers.Remove(request.LinkedUserId)) {
             await _unitOfWork.TaskList.Update(taskList);
-        } 
+        }
         response.IsSuccess = result > 0;
         return response;
     }
@@ -128,7 +136,13 @@ public class TaskListService : ITaskListService
         response.List = bsonTasks.ToList().Select(v => BsonSerializer.Deserialize<TaskList>(v)).ToList();
         return response;
     }
-
+    /// <summary>
+    /// Видалити існуючий список задач
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     public async Task<BaseResponse> Remove(ObjectId id)
     {
         var response = new BaseResponse { IsSuccess = true };
